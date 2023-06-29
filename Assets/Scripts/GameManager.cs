@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
     private GameObject currentBall;
     private GameObject currentLevel;
 
+    bool isSwitchingState;
+
     public int Score
     {
         get { return score; }
@@ -63,9 +65,17 @@ public class GameManager : MonoBehaviour
         SwitchState(State.MENU);
     }
 
-    public void SwitchState(State newState) {
+    public void SwitchState(State newState, float delay = 0) {
+        StartCoroutine(SwitchDelay(newState,delay));
+    }
+
+    IEnumerator SwitchDelay(State newState, float delay) {
+        isSwitchingState = true;
+        yield return new WaitForSeconds(delay);
         EndState();
+        state = newState;
         BeginState(newState);
+        isSwitchingState=false;
     }
 
     void BeginState(State newstate) {
@@ -94,6 +104,7 @@ public class GameManager : MonoBehaviour
                 else 
                 {
                     currentLevel = Instantiate(levels[Level]);
+                    SwitchState(State.PLAY);
                 }
                 break;
             case State.GAMEOVER:
